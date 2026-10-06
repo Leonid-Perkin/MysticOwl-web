@@ -1,0 +1,45 @@
+name: Build macOS DMG Installer
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build_macos:
+    name: Build Astral Tarot for macOS (.app & .dmg)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter (stable)
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Enable macOS desktop support & get dependencies
+        run: |
+          flutter config --enable-macos-desktop
+          flutter pub get
+
+      - name: Build macOS release (.app)
+        run: flutter build macos --release
+
+      - name: Package .app into macOS .dmg installer
+        run: |
+          mkdir -p dmg_staging
+          cp -R build/macos/Build/Products/Release/tarot_flutter.app "dmg_staging/Astral Tarot.app"
+          ln -s /Applications dmg_staging/Applications
+          hdiutil create -volname "Astral Tarot" \
+            -srcfolder dmg_staging \
+            -ov -format UDZO \
+            Astral-Tarot-macOS-Installer.dmg
+
+      - name: Upload macOS DMG Installer Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Astral-Tarot-macOS-Installer
+          path: Astral-Tarot-macOS-Installer.dmg
