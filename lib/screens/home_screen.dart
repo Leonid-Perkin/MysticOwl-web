@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/tarot_deck.dart';
 import '../models/tarot_spread.dart';
+import '../services/pwa_service.dart';
 import '../services/storage_service.dart';
 import 'encyclopedia_screen.dart';
 import 'history_screen.dart';
@@ -52,6 +53,59 @@ class _HomeScreenState extends State<HomeScreen> {
       _savedReadings.removeWhere((r) => r.id == id);
     });
     StorageService.saveReadings(_savedReadings);
+  }
+
+  void _onUpdatePwaPressed() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1333),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Color(0xFFD4AF37), width: 1.2),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.system_update_alt, color: Color(0xFFD4AF37)),
+            SizedBox(width: 10),
+            Text(
+              'Обновление MysticOwl',
+              style: TextStyle(color: Color(0xFFFFE082), fontSize: 18),
+            ),
+          ],
+        ),
+        content: const Text(
+          'Проверить наличие обновлений, очистить кэш приложения и загрузить последнюю версию?',
+          style: TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Отмена', style: TextStyle(color: Colors.white60)),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Обновляем приложение... ✨'),
+                  backgroundColor: Color(0xFF2B1D48),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+              PwaService.updateApp();
+            },
+            icon: const Icon(Icons.refresh, size: 18),
+            label: const Text('Обновить'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFD4AF37),
+              foregroundColor: const Color(0xFF140D24),
+              textStyle: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -122,8 +176,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            onPressed: _onUpdatePwaPressed,
+            icon: const Icon(
+              Icons.system_update_alt,
+              color: Color(0xFFD4AF37),
+              size: 21,
+            ),
+            tooltip: 'Обновить PWA приложение',
+          ),
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+            padding: const EdgeInsets.only(right: 16.0, left: 4.0),
             child: Center(
               child: Container(
                 padding:
