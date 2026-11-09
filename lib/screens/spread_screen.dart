@@ -596,10 +596,20 @@ class _SpreadScreenState extends State<SpreadScreen>
                     : (constraints.maxWidth * 0.17).clamp(90.0, 130.0);
                 final cardH = cardW * 1.58;
 
+                // Determine rendering order (z-index) so selected or hovered cards appear on top
+                final renderIndices = List<int>.generate(_drawnCards.length, (i) => i);
+                if (_selectedPositionIndex != null &&
+                    _selectedPositionIndex! >= 0 &&
+                    _selectedPositionIndex! < renderIndices.length) {
+                  renderIndices.remove(_selectedPositionIndex!);
+                  renderIndices.add(_selectedPositionIndex!);
+                }
+
                 return Stack(
                   children: [
-                    for (int i = 0; i < _drawnCards.length; i++)
+                    for (final i in renderIndices)
                       Builder(
+                        key: ValueKey('spread_card_$i'),
                         builder: (context) {
                           final pos = _currentSpread.positions[i];
                           final left =

@@ -802,7 +802,7 @@ class TarotRepository {
           description: 'То, что способствует или бросает вызов в данной ситуации.',
           dx: 0.38,
           dy: 0.48,
-          rotation: math.pi / 12,
+          rotation: math.pi / 2,
         ),
         SpreadPosition(
           index: 3,
