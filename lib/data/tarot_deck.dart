@@ -793,16 +793,15 @@ class TarotRepository {
           index: 1,
           title: '1. Суть ситуации',
           description: 'Центральное ядро вопроса и ваше положение сейчас.',
-          dx: 0.38,
+          dx: 0.32,
           dy: 0.48,
         ),
         SpreadPosition(
           index: 2,
           title: '2. Пересечение (Импульс / Преграда)',
           description: 'То, что способствует или бросает вызов в данной ситуации.',
-          dx: 0.38,
+          dx: 0.44,
           dy: 0.48,
-          rotation: math.pi / 2,
         ),
         SpreadPosition(
           index: 3,
