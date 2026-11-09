@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#2D194C"/>
+      <stop offset="55%" stop-color="#160E26"/>
+      <stop offset="100%" stop-color="#0A0612"/>
+    </radialGradient>
+
+    <!-- Gold Gradients -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF2B2"/>
+      <stop offset="35%" stop-color="#F1C40F"/>
+      <stop offset="70%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#996515"/>
+    </linearGradient>
+
+    <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFDF0"/>
+      <stop offset="40%" stop-color="#FDE047"/>
+      <stop offset="75%" stop-color="#EAB308"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+
+    <!-- Mystic Violet Gradient -->
+    <linearGradient id="violetGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#9D72FF"/>
+      <stop offset="60%" stop-color="#6B3BA7"/>
+      <stop offset="100%" stop-color="#3C1A6E"/>
+    </linearGradient>
+
+    <!-- Wing Gradient -->
+    <linearGradient id="wingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5B2C8C"/>
+      <stop offset="100%" stop-color="#1F1038"/>
+    </linearGradient>
+
+    <!-- Drop Shadows / Glow Filter -->
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="512" height="512" rx="105" fill="url(#bgGlow)"/>
+
+  <!-- Outer Sacred Geometry Ring -->
+  <circle cx="256" cy="256" r="236" fill="none" stroke="url(#goldGrad)" stroke-width="2.5" opacity="0.4"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="url(#goldGrad)" stroke-width="1.2" stroke-dasharray="6,8" opacity="0.6"/>
+
+  <!-- Mystic Compass / Star Rays -->
+  <g stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.3">
+    <line x1="256" y1="30" x2="256" y2="482"/>
+    <line x1="30" y1="256" x2="482" y2="256"/>
+    <line x1="96" y1="96" x2="416" y2="416"/>
+    <line x1="96" y1="416" x2="416" y2="96"/>
+  </g>
+
+  <!-- Celestial Crescent Moon behind the Owl -->
+  <path d="M 256,65 A 175,175 0 0,0 395,335 A 195,195 0 0,1 256,65 Z"
+        fill="url(#goldGrad)" opacity="0.22"/>
+
+  <!-- Geometric Wings (Folded Mystical Wings) -->
+  <g id="wings" stroke="url(#goldGrad)" stroke-width="2">
+    <!-- Left Wing -->
+    <path d="M 175,230 C 130,260 110,320 125,385 C 145,345 175,310 195,285 Z"
+          fill="url(#wingGrad)" filter="url(#goldGlow)"/>
+    <path d="M 160,260 C 120,300 115,360 140,405 C 155,365 180,335 200,310 Z"
+          fill="url(#wingGrad)" opacity="0.8"/>
+
+    <!-- Right Wing -->
+    <path d="M 337,230 C 382,260 402,320 387,385 C 367,345 337,310 317,285 Z"
+          fill="url(#wingGrad)" filter="url(#goldGlow)"/>
+    <path d="M 352,260 C 392,300 397,360 372,405 C 357,365 332,335 312,310 Z"
+          fill="url(#wingGrad)" opacity="0.8"/>
+  </g>
+
+  <!-- Owl Body / Chest (Tarot Pentagram Shield Shape) -->
+  <path d="M 210,250 C 210,370 256,430 256,430 C 256,430 302,370 302,250 Z"
+        fill="url(#violetGrad)" stroke="url(#goldGrad)" stroke-width="2.5"/>
+
+  <!-- Chest Feather Chevron Lines -->
+  <path d="M 235,300 L 256,322 L 277,300" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.75"/>
+  <path d="M 230,335 L 256,360 L 282,335" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.6"/>
+  <path d="M 238,370 L 256,390 L 274,370" fill="none" stroke="url(#goldGrad)" stroke-width="1.8" opacity="0.5"/>
+
+  <!-- Owl Head Silhouette with Feather Tufts (Ears) -->
+  <path d="M 165,150 L 210,195 L 256,182 L 302,195 L 347,150 L 325,230 C 335,260 325,285 295,295 C 265,302 247,302 217,295 C 187,285 177,260 187,230 Z"
+        fill="url(#violetGrad)" stroke="url(#goldGrad)" stroke-width="3" filter="url(#goldGlow)"/>
+
+  <!-- Third Eye / Forehead Crown Diamond (Mystic Ajna) -->
+  <polygon points="256,128 266,146 256,164 246,146" fill="url(#goldGrad)" filter="url(#goldGlow)"/>
+  <circle cx="256" cy="146" r="3" fill="#FFFFFF"/>
+
+  <!-- Forehead Starburst Lines -->
+  <path d="M 256,114 L 256,122 M 256,170 L 256,178 M 238,146 L 244,146 M 268,146 L 274,146"
+        stroke="url(#goldGrad)" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Outer Eyes Frame Rings -->
+  <circle cx="218" cy="225" r="44" fill="#120A22" stroke="url(#goldGrad)" stroke-width="3.5"/>
+  <circle cx="294" cy="225" r="44" fill="#120A22" stroke="url(#goldGrad)" stroke-width="3.5"/>
+
+  <circle cx="218" cy="225" r="37" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.8"/>
+  <circle cx="294" cy="225" r="37" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.8"/>
+
+  <!-- Glowing Golden Irises -->
+  <circle cx="218" cy="225" r="28" fill="url(#eyeGrad)" filter="url(#goldGlow)"/>
+  <circle cx="294" cy="225" r="28" fill="url(#eyeGrad)" filter="url(#goldGlow)"/>
+
+  <!-- Pupils -->
+  <circle cx="218" cy="225" r="14" fill="#0C0616"/>
+  <circle cx="294" cy="225" r="14" fill="#0C0616"/>
+
+  <!-- Eye Highlights / Catchlights (Living Eyes) -->
+  <circle cx="223" cy="219" r="5" fill="#FFFFFF"/>
+  <circle cx="213" cy="230" r="2.2" fill="#FFFBEB"/>
+
+  <circle cx="299" cy="219" r="5" fill="#FFFFFF"/>
+  <circle cx="289" cy="230" r="2.2" fill="#FFFBEB"/>
+
+  <!-- Golden Geometric Beak -->
+  <polygon points="256,236 244,260 256,280 268,260" fill="url(#goldGrad)" stroke="#684205" stroke-width="1"/>
+  <line x1="256" y1="236" x2="256" y2="280" stroke="#FFF7D6" stroke-width="1.2" opacity="0.8"/>
+
+  <!-- Tarot Arcana Sparkles / Pentagrams -->
+  <g fill="url(#goldGrad)">
+    <!-- 4-point Sparkle Top Left -->
+    <path d="M 120,135 Q 120,150 105,150 Q 120,150 120,165 Q 120,150 135,150 Q 120,150 120,135 Z"/>
+    <!-- 4-point Sparkle Top Right -->
+    <path d="M 390,135 Q 390,150 375,150 Q 390,150 390,165 Q 390,150 405,150 Q 390,150 390,135 Z"/>
+    <!-- 4-point Sparkle Bottom Center -->
+    <path d="M 256,448 Q 256,460 244,460 Q 256,460 256,472 Q 256,460 268,460 Q 256,460 256,448 Z"/>
+    <!-- Small stars -->
+    <circle cx="150" cy="90" r="2.5" opacity="0.7"/>
+    <circle cx="362" cy="90" r="2.5" opacity="0.7"/>
+    <circle cx="85" cy="270" r="2" opacity="0.5"/>
+    <circle cx="427" cy="270" r="2" opacity="0.5"/>
+  </g>
+</svg>
