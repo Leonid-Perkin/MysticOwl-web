@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 
 void main() {
-  runApp(const AstralTarotApp());
+  runApp(const MysticOwlApp());
 }
 
-class AstralTarotApp extends StatelessWidget {
-  const AstralTarotApp({super.key});
+class MysticOwlApp extends StatelessWidget {
+  const MysticOwlApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Astral Tarot — Расклады Таро',
+      title: 'MysticOwl — Расклады Таро',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,

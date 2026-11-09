@@ -592,7 +592,7 @@ class _SpreadScreenState extends State<SpreadScreen>
               builder: (context, constraints) {
                 final isDense = _currentSpread.cardCount >= 10;
                 final cardW = isDense
-                    ? (constraints.maxWidth * 0.14).clamp(76.0, 108.0)
+                    ? (constraints.maxWidth * 0.115).clamp(65.0, 92.0)
                     : (constraints.maxWidth * 0.17).clamp(90.0, 130.0);
                 final cardH = cardW * 1.58;
 

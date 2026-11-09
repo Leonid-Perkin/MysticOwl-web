@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/tarot_deck.dart';
 import '../models/tarot_spread.dart';
+import '../services/storage_service.dart';
 import 'encyclopedia_screen.dart';
 import 'history_screen.dart';
 import 'spread_screen.dart';
@@ -15,7 +16,22 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentTab = 0;
   TarotSpread _activeSpread = TarotRepository.spreads.first;
-  final List<SavedReading> _savedReadings = [];
+  List<SavedReading> _savedReadings = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadReadings();
+  }
+
+  Future<void> _loadReadings() async {
+    final loaded = await StorageService.loadSavedReadings();
+    if (mounted) {
+      setState(() {
+        _savedReadings = loaded;
+      });
+    }
+  }
 
   void _openSpread(TarotSpread spread) {
     setState(() {
@@ -28,12 +44,14 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _savedReadings.insert(0, reading);
     });
+    StorageService.saveReadings(_savedReadings);
   }
 
   void _deleteSavedReading(String id) {
     setState(() {
       _savedReadings.removeWhere((r) => r.id == id);
     });
+    StorageService.saveReadings(_savedReadings);
   }
 
   @override
@@ -79,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'ASTRAL TAROT • МИСТИЧЕСКИЙ ОРАКУЛ',
+                    'MYSTICOWL • МИСТИЧЕСКИЙ ОРАКУЛ',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
