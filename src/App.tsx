@@ -38,35 +38,41 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0E0918] text-[#F5EFE6]">
+    <div className="h-screen max-h-screen w-screen overflow-hidden flex flex-col bg-[#0E0918] text-[#F5EFE6]">
       {/* Top Navbar */}
       <Navbar savedReadingsCount={savedReadings.length} />
 
       {/* Main Workspace */}
-      <div className="flex-1 flex overflow-hidden pb-16 md:pb-0">
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Desktop Navigation Rail */}
-        <div className="hidden md:block">
+        <div className="hidden md:flex flex-shrink-0 h-full">
           <DesktopNavRail currentTab={currentTab} onTabChange={setCurrentTab} />
         </div>
 
-        {/* Content Screens */}
-        <main className="flex-1 overflow-y-auto">
-          {currentTab === 'spreads' && (
+        {/* Content Screens: Preserved in DOM like Flutter's IndexedStack so state is never lost */}
+        <main className="flex-1 h-full overflow-hidden relative pb-16 md:pb-0">
+          <div className={`h-full w-full overflow-y-auto ${currentTab === 'spreads' ? 'block' : 'hidden'}`}>
             <SpreadsCatalogScreen onSelectSpread={handleOpenSpread} />
-          )}
-          {currentTab === 'table' && (
+          </div>
+
+          <div className={`h-full w-full overflow-hidden ${currentTab === 'table' ? 'block' : 'hidden'}`}>
             <SpreadScreen
               initialSpread={activeSpread}
+              onSpreadChange={setActiveSpread}
               onSaveReading={handleAddSavedReading}
             />
-          )}
-          {currentTab === 'encyclopedia' && <EncyclopediaScreen />}
-          {currentTab === 'history' && (
+          </div>
+
+          <div className={`h-full w-full overflow-y-auto ${currentTab === 'encyclopedia' ? 'block' : 'hidden'}`}>
+            <EncyclopediaScreen />
+          </div>
+
+          <div className={`h-full w-full overflow-y-auto ${currentTab === 'history' ? 'block' : 'hidden'}`}>
             <HistoryScreen
               readings={savedReadings}
               onDeleteReading={handleDeleteSavedReading}
             />
-          )}
+          </div>
         </main>
       </div>
 

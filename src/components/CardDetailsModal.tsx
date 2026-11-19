@@ -34,16 +34,19 @@ export const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
       <div className="fixed inset-0" onClick={onClose} />
 
       <div
-        className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#160F29] border border-[#D4AF37]/50 rounded-2xl shadow-2xl p-6 sm:p-8 text-[#F5EFE6]"
+        className="relative z-10 w-full max-w-2xl max-h-[88vh] sm:max-h-[90vh] overflow-y-auto bg-[#160F29] border border-[#D4AF37]/50 rounded-2xl shadow-2xl p-4 sm:p-6 sm:p-8 text-[#F5EFE6]"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Mobile handle indicator */}
+        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-3 sm:hidden" />
+
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+          className="absolute top-3 sm:top-4 right-3 sm:right-4 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
           title="Закрыть"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
 
         {/* Position context (if opened from spread) */}
