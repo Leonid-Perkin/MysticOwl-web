@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mysticowl-v1';
+const CACHE_NAME = 'mysticowl-v2';
 
 const STATIC_ASSETS = [
   './',
@@ -59,8 +59,12 @@ self.addEventListener('fetch', (event) => {
   // Navigation requests: Network first with cached index.html fallback
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match('./index.html');
+      fetch(event.request).catch(async () => {
+        return (
+          (await caches.match('./index.html')) ||
+          (await caches.match('index.html')) ||
+          (await caches.match('./'))
+        );
       })
     );
     return;
