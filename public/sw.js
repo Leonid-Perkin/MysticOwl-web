@@ -16,7 +16,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('Pre-cache error:', err);
+        console.warn('Pre-cache error (non-fatal):', err);
       });
     })
   );
@@ -39,34 +39,59 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Navigation requests: Network first with cache fallback
+  // Only process GET requests to prevent Cache API exceptions and side-effect replay
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  let requestUrl;
+  try {
+    requestUrl = new URL(event.request.url);
+  } catch {
+    return;
+  }
+
+  // Only handle HTTP/HTTPS (ignore chrome-extension:, data:, blob:)
+  if (!requestUrl.protocol.startsWith('http')) {
+    return;
+  }
+
+  // Navigation requests: Network first with cached index.html fallback
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match('./index.html'))
+      fetch(event.request).catch(() => {
+        return caches.match('./index.html');
+      })
     );
     return;
   }
 
-  // Assets: Cache first with network fallback
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
+  // Same-origin static assets: Cache first with network fallback
+  if (requestUrl.origin === self.location.origin) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+
+        return fetch(event.request).then((response) => {
+          // Only cache valid basic 200 responses
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache).catch(() => {});
+          });
+
           return response;
-        }
-        const toCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, toCache);
         });
-        return response;
-      });
-    })
-  );
+      })
+    );
+  }
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+  if (event.data && typeof event.data === 'object' && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });

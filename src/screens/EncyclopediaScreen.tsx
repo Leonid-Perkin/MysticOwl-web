@@ -49,6 +49,7 @@ export const EncyclopediaScreen: React.FC = () => {
         <div className="relative w-full sm:w-80">
           <input
             type="text"
+            maxLength={100}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Поиск по названию или ключу..."

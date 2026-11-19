@@ -251,6 +251,7 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
           <div className="relative flex-1 min-w-[200px]">
             <input
               type="text"
+              maxLength={200}
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Ваш вопрос картам Таро..."

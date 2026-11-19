@@ -6,6 +6,11 @@
     <meta name="description" content="MysticOwl — Интерактивные расклады и энциклопедия Арканов Таро" />
     <meta name="theme-color" content="#0E0918" />
 
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https:; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self';" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
     <!-- iOS PWA meta -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -27,27 +32,31 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      window.updateMysticOwlApp = async function() {
-        try {
-          if ('serviceWorker' in navigator) {
-            const regs = await navigator.serviceWorker.getRegistrations();
-            for (const reg of regs) {
-              await reg.update();
-              if (reg.waiting) {
-                reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      Object.defineProperty(window, 'updateMysticOwlApp', {
+        value: Object.freeze(async function() {
+          try {
+            if ('serviceWorker' in navigator) {
+              const regs = await navigator.serviceWorker.getRegistrations();
+              for (const reg of regs) {
+                await reg.update();
+                if (reg.waiting) {
+                  reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                }
               }
             }
+            if ('caches' in window) {
+              const keys = await caches.keys();
+              await Promise.all(keys.map(function(k) { return caches.delete(k); }));
+            }
+          } catch (err) {
+            console.warn('Error clearing PWA cache:', err);
+          } finally {
+            window.location.reload();
           }
-          if ('caches' in window) {
-            const keys = await caches.keys();
-            await Promise.all(keys.map(k => caches.delete(k)));
-          }
-        } catch (err) {
-          console.warn('Error clearing PWA cache:', err);
-        } finally {
-          window.location.reload();
-        }
-      };
+        }),
+        writable: false,
+        configurable: false
+      });
     </script>
   </body>
 </html>
