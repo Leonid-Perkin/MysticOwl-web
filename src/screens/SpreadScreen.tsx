@@ -14,6 +14,8 @@ import {
   ChevronDown,
   HelpCircle,
   BookOpen,
+  ArrowRight,
+  ArrowLeft,
 } from 'lucide-react';
 
 interface SpreadScreenProps {
@@ -35,6 +37,9 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
   const [drawnCards, setDrawnCards] = useState<DrawnCard[]>([]);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(null);
   const [isSaved, setIsSaved] = useState<boolean>(false);
+
+  // Mobile view switcher: 'table' vs 'reading'
+  const [mobileView, setMobileView] = useState<'table' | 'reading'>('table');
 
   // Modal inspection
   const [modalCard, setModalCard] = useState<TarotCard | null>(null);
@@ -71,6 +76,7 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
       setDrawnCards([]);
       setSelectedCardIndex(null);
       setIsSaved(false);
+      setMobileView('table');
     }
   }, [initialSpread.id]);
 
@@ -81,6 +87,7 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
       setDrawnCards([]);
       setSelectedCardIndex(null);
       setIsSaved(false);
+      setMobileView('table');
       onSpreadChange?.(found);
     }
   };
@@ -91,6 +98,7 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
     setDrawnCards([]);
     setSelectedCardIndex(null);
     setIsSaved(false);
+    setMobileView('table');
 
     setTimeout(() => {
       const pool = onlyMajorArcana
@@ -186,33 +194,33 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
     });
   };
 
-  // Responsive card dimensions based on container width
+  // Responsive card dimensions based on container width & spread density
   const isCeltic = currentSpread.positions.length >= 10;
   const isCompactMobile = tableSize.width < 500;
   let cardW = 110;
   if (isCeltic) {
     cardW = isCompactMobile
-      ? Math.max(52, Math.min(Math.round(tableSize.width * 0.155), 62))
-      : Math.max(76, Math.min(Math.round(tableSize.width * 0.09), 118));
+      ? Math.max(50, Math.min(Math.round(tableSize.width * 0.145), 58))
+      : Math.max(76, Math.min(Math.round(tableSize.width * 0.088), 118));
   } else {
     cardW = isCompactMobile
-      ? Math.max(72, Math.min(Math.round(tableSize.width * 0.22), 95))
-      : Math.max(85, Math.min(Math.round(tableSize.width * 0.135), 142));
+      ? Math.max(75, Math.min(Math.round(tableSize.width * 0.23), 105))
+      : Math.max(88, Math.min(Math.round(tableSize.width * 0.135), 142));
   }
-  const cardH = Math.round(cardW * 1.58);
+  const cardH = Math.round(cardW * 1.55);
 
   return (
-    <div className="flex flex-col h-full w-full overflow-y-auto lg:overflow-hidden animate-fadeIn pb-20 lg:pb-0">
-      {/* ================= TOP CONTROL BAR ================= */}
-      <div className="flex-shrink-0 px-3 sm:px-6 py-2.5 sm:py-3.5 bg-[#160E26] border-b border-[#D4AF37]/25 flex flex-wrap items-center justify-between gap-2.5 z-20">
-        {/* Left: Spread Dropdown & Question */}
-        <div className="flex flex-wrap items-center gap-2.5 flex-1 min-w-[280px]">
+    <div className="flex flex-col h-full w-full overflow-hidden animate-fadeIn">
+      {/* ================= COMPACT RESPONSIVE TOP CONTROL BAR ================= */}
+      <div className="flex-shrink-0 px-3 sm:px-6 py-2 bg-[#160E26] border-b border-[#D4AF37]/25 space-y-2 z-20">
+        {/* Row 1: Dropdown + Primary Action Button */}
+        <div className="flex items-center justify-between gap-2">
           {/* Spread Selector */}
-          <div className="relative">
+          <div className="relative flex-1 max-w-xs sm:max-w-sm">
             <select
               value={currentSpread.id}
               onChange={(e) => handleSpreadSelect(e.target.value)}
-              className="appearance-none bg-[#22163B] border border-[#D4AF37]/50 text-white rounded-xl px-3 py-1.5 sm:py-2 pr-8 text-xs sm:text-sm font-medium cursor-pointer focus:outline-none focus:border-[#D4AF37]"
+              className="w-full appearance-none bg-[#22163B] border border-[#D4AF37]/50 text-white rounded-xl px-3 py-1.5 sm:py-2 pr-8 text-xs sm:text-sm font-medium cursor-pointer focus:outline-none focus:border-[#D4AF37]"
             >
               {TAROT_SPREADS.map((sp) => (
                 <option key={sp.id} value={sp.id} className="bg-[#1B1130] text-white">
@@ -226,91 +234,122 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
             />
           </div>
 
+          {/* Deal Cards Button */}
+          <button
+            onClick={handleDealCards}
+            disabled={isShuffling}
+            className="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#D4AF37] hover:bg-[#FFE082] text-[#140D24] font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95 disabled:opacity-50"
+          >
+            <Sparkles size={15} />
+            <span>{drawnCards.length === 0 ? 'Разложить карты' : 'Новый расклад'}</span>
+          </button>
+        </div>
+
+        {/* Row 2: Question Input + Options Chips */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
           {/* Question input */}
-          <div className="relative flex-1 min-w-[190px] max-w-md">
+          <div className="relative flex-1 min-w-[200px]">
             <input
               type="text"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Ваш вопрос картам Таро..."
-              className="w-full bg-[#22163B] border border-[#D4AF37]/35 focus:border-[#D4AF37] rounded-xl px-3 py-1.5 sm:py-2 pl-8 sm:pl-9 text-white placeholder-white/40 focus:outline-none text-xs sm:text-sm transition-colors"
+              className="w-full bg-[#22163B] border border-[#D4AF37]/35 focus:border-[#D4AF37] rounded-xl px-3 py-1 sm:py-1.5 pl-8 sm:pl-9 text-white placeholder-white/40 focus:outline-none text-xs sm:text-sm transition-colors"
             />
             <HelpCircle
-              size={15}
+              size={14}
               className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-[#D4AF37]"
             />
           </div>
-        </div>
 
-        {/* Right: Toggles & Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Allow Reversed toggle */}
-          <button
-            onClick={() => setAllowReversed(!allowReversed)}
-            className={`px-2.5 py-1.5 rounded-xl border text-[11px] sm:text-xs font-semibold transition-all ${
-              allowReversed
-                ? 'bg-[#D4AF37]/25 border-[#D4AF37] text-[#FFE082]'
-                : 'bg-[#22163B] border-white/20 text-white/60 hover:text-white'
-            }`}
-          >
-            {allowReversed ? '✓ Перевёрнутые' : 'Перевёрнутые'}
-          </button>
-
-          {/* Only Major Arcana toggle */}
-          <button
-            onClick={() => setOnlyMajorArcana(!onlyMajorArcana)}
-            className={`px-2.5 py-1.5 rounded-xl border text-[11px] sm:text-xs font-semibold transition-all ${
-              onlyMajorArcana
-                ? 'bg-[#D4AF37]/25 border-[#D4AF37] text-[#FFE082]'
-                : 'bg-[#22163B] border-white/20 text-white/60 hover:text-white'
-            }`}
-          >
-            {onlyMajorArcana ? '✓ Только Старшие' : 'Только Старшие'}
-          </button>
-
-          {/* Deal Cards Button */}
-          <button
-            onClick={handleDealCards}
-            disabled={isShuffling}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#D4AF37] hover:bg-[#FFE082] text-[#140D24] font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95 disabled:opacity-50"
-          >
-            <Sparkles size={15} />
-            <span>{drawnCards.length === 0 ? 'Разложить карты' : 'Новый расклад'}</span>
-          </button>
-
-          {/* Reveal All Button */}
-          {drawnCards.length > 0 && !allRevealed && (
+          {/* Filter Chips & Action Buttons */}
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5">
             <button
-              onClick={handleRevealAll}
-              className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl border border-[#D4AF37] text-[#FFE082] hover:bg-[#D4AF37]/15 text-xs sm:text-sm font-semibold transition-colors"
-            >
-              <Eye size={15} />
-              <span>Открыть все</span>
-            </button>
-          )}
-
-          {/* Save to History Button */}
-          {allRevealed && (
-            <button
-              onClick={handleSaveReading}
-              disabled={isSaved}
-              className={`flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl border text-xs sm:text-sm font-semibold transition-all ${
-                isSaved
-                  ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300'
-                  : 'border-[#D4AF37] text-[#FFE082] hover:bg-[#D4AF37]/20'
+              onClick={() => setAllowReversed(!allowReversed)}
+              className={`px-2.5 py-1 rounded-lg border text-[11px] font-semibold whitespace-nowrap transition-all ${
+                allowReversed
+                  ? 'bg-[#D4AF37]/25 border-[#D4AF37] text-[#FFE082]'
+                  : 'bg-[#22163B] border-white/20 text-white/60 hover:text-white'
               }`}
             >
-              {isSaved ? <Check size={15} /> : <BookmarkPlus size={15} />}
-              <span>{isSaved ? 'Сохранено' : 'В журнал'}</span>
+              {allowReversed ? '✓ Перевёрнутые' : 'Перевёрнутые'}
             </button>
-          )}
+
+            <button
+              onClick={() => setOnlyMajorArcana(!onlyMajorArcana)}
+              className={`px-2.5 py-1 rounded-lg border text-[11px] font-semibold whitespace-nowrap transition-all ${
+                onlyMajorArcana
+                  ? 'bg-[#D4AF37]/25 border-[#D4AF37] text-[#FFE082]'
+                  : 'bg-[#22163B] border-white/20 text-white/60 hover:text-white'
+              }`}
+            >
+              {onlyMajorArcana ? '✓ Только Старшие' : 'Только Старшие'}
+            </button>
+
+            {/* Reveal All Button */}
+            {drawnCards.length > 0 && !allRevealed && (
+              <button
+                onClick={handleRevealAll}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-[#D4AF37] text-[#FFE082] hover:bg-[#D4AF37]/15 text-[11px] font-semibold whitespace-nowrap transition-colors"
+              >
+                <Eye size={13} />
+                <span>Открыть все</span>
+              </button>
+            )}
+
+            {/* Save to History Button */}
+            {allRevealed && (
+              <button
+                onClick={handleSaveReading}
+                disabled={isSaved}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-semibold whitespace-nowrap transition-all ${
+                  isSaved
+                    ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300'
+                    : 'border-[#D4AF37] text-[#FFE082] hover:bg-[#D4AF37]/20'
+                }`}
+              >
+                {isSaved ? <Check size={13} /> : <BookmarkPlus size={13} />}
+                <span>{isSaved ? 'Сохранено' : 'В журнал'}</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
+      {/* ================= MOBILE VIEW SWITCHER (Visible on Mobile Only) ================= */}
+      <div className="flex lg:hidden bg-[#140D24] p-1 border-b border-[#D4AF37]/20 flex-shrink-0">
+        <button
+          onClick={() => setMobileView('table')}
+          className={`flex-1 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            mobileView === 'table'
+              ? 'bg-[#D4AF37] text-[#140D24] shadow-md'
+              : 'text-white/60 hover:text-white'
+          }`}
+        >
+          <Sparkles size={14} />
+          <span>Стол расклада</span>
+        </button>
+        <button
+          onClick={() => setMobileView('reading')}
+          className={`flex-1 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            mobileView === 'reading'
+              ? 'bg-[#D4AF37] text-[#140D24] shadow-md'
+              : 'text-white/60 hover:text-white'
+          }`}
+        >
+          <BookOpen size={14} />
+          <span>Толкование {drawnCards.length > 0 ? `(${revealedCount}/${drawnCards.length})` : ''}</span>
+        </button>
+      </div>
+
       {/* ================= MAIN SPREAD AREA ================= */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden relative">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         {/* ================= TABLE AREA ================= */}
-        <div className="flex-1 min-h-[480px] sm:min-h-[560px] lg:min-h-0 h-[520px] sm:h-[600px] lg:h-full relative p-2.5 sm:p-4 flex flex-col justify-center">
+        <div
+          className={`flex-1 h-full min-h-0 relative p-2 sm:p-4 flex flex-col justify-center ${
+            mobileView === 'table' ? 'flex' : 'hidden lg:flex'
+          }`}
+        >
           <div
             ref={tableRef}
             className="w-full h-full max-w-[1300px] mx-auto rounded-2xl bg-gradient-to-b from-[#241640] to-[#120B21] border border-[#D4AF37]/35 shadow-2xl relative overflow-hidden flex items-center justify-center select-none"
@@ -321,21 +360,21 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
             {/* Shuffling animation */}
             {isShuffling && (
               <div className="relative z-20 flex flex-col items-center justify-center gap-4 text-center p-4">
-                <div className="relative w-40 h-40 flex items-center justify-center">
+                <div className="relative w-36 h-36 flex items-center justify-center">
                   {[0, 1, 2, 3, 4].map((i) => (
                     <div
                       key={i}
                       className="absolute w-20 h-32 rounded-xl bg-[#23153C] border-2 border-[#D4AF37] shadow-xl flex items-center justify-center text-[#D4AF37]"
                       style={{
-                        transform: `translate(${(i - 2) * 20}px, 0) rotate(${(i - 2) * 8}deg)`,
+                        transform: `translate(${(i - 2) * 18}px, 0) rotate(${(i - 2) * 8}deg)`,
                         animation: `pulse 1s ease-in-out infinite alternate ${i * 0.15}s`,
                       }}
                     >
-                      <Sparkles size={24} />
+                      <Sparkles size={22} />
                     </div>
                   ))}
                 </div>
-                <p className="text-sm sm:text-base font-cinzel text-[#FFE082] italic animate-pulse">
+                <p className="text-xs sm:text-base font-cinzel text-[#FFE082] italic animate-pulse">
                   Тасуем колоду и настраиваемся на ваш вопрос...
                 </p>
               </div>
@@ -343,9 +382,9 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
 
             {/* Empty State before dealing */}
             {!isShuffling && drawnCards.length === 0 && (
-              <div className="relative z-20 max-w-md p-6 text-center space-y-4">
+              <div className="relative z-20 max-w-md p-4 sm:p-6 text-center space-y-3 sm:space-y-4">
                 <div
-                  className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full border-2 flex items-center justify-center shadow-2xl"
+                  className="w-14 h-14 sm:w-20 sm:h-20 mx-auto rounded-full border-2 flex items-center justify-center shadow-2xl"
                   style={{
                     backgroundColor: `${currentSpread.themeColor}18`,
                     borderColor: `${currentSpread.themeColor}80`,
@@ -353,29 +392,29 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
                 >
                   <DynamicIcon
                     name={currentSpread.iconName}
-                    size={36}
+                    size={32}
                     color={currentSpread.themeColor}
                   />
                 </div>
 
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-bold font-cinzel text-white">
+                  <h3 className="text-lg sm:text-2xl font-bold font-cinzel text-white">
                     {currentSpread.name}
                   </h3>
-                  <p className="text-xs sm:text-sm text-[#D4AF37] mt-1 font-medium">
+                  <p className="text-[11px] sm:text-sm text-[#D4AF37] mt-0.5 sm:mt-1 font-medium">
                     {currentSpread.subtitle}
                   </p>
                 </div>
 
-                <p className="text-xs sm:text-sm text-white/70 leading-relaxed px-2">
+                <p className="text-xs sm:text-sm text-white/70 leading-relaxed px-2 line-clamp-3 sm:line-clamp-none">
                   {currentSpread.description}
                 </p>
 
                 <button
                   onClick={handleDealCards}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#D4AF37] hover:bg-[#FFE082] text-[#140D24] font-bold text-xs sm:text-sm shadow-lg transition-transform hover:scale-105 active:scale-95"
+                  className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-[#D4AF37] hover:bg-[#FFE082] text-[#140D24] font-bold text-xs sm:text-sm shadow-lg transition-transform hover:scale-105 active:scale-95"
                 >
-                  <Sparkles size={17} />
+                  <Sparkles size={16} />
                   <span>Перетасовать колоду и вытянуть карты</span>
                 </button>
               </div>
@@ -389,7 +428,7 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
                   if (!drawn) return null;
 
                   const isSelected = selectedCardIndex === idx;
-                  const zIndex = isSelected ? 30 : idx + 10;
+                  const zIndex = isSelected ? 35 : (pos.rotation ? 25 : idx + 10);
 
                   return (
                     <div
@@ -413,13 +452,43 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
                     </div>
                   );
                 })}
+
+                {/* Floating pill button on mobile to view interpretations */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 lg:hidden">
+                  <button
+                    onClick={() => setMobileView('reading')}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#1A1030]/90 backdrop-blur-md border border-[#D4AF37] text-[#FFE082] shadow-2xl text-xs font-bold hover:scale-105 active:scale-95 transition-all"
+                  >
+                    <BookOpen size={14} className="text-[#D4AF37]" />
+                    <span>Толкование ({revealedCount}/{drawnCards.length})</span>
+                    <ArrowRight size={13} />
+                  </button>
+                </div>
               </div>
             )}
           </div>
         </div>
 
         {/* ================= INTERPRETATION PANEL ================= */}
-        <div className="w-full lg:w-[420px] xl:w-[460px] flex-shrink-0 bg-[#160F29] border-t lg:border-t-0 lg:border-l border-[#D4AF37]/30 flex flex-col overflow-y-auto p-4 sm:p-5 text-sm">
+        <div
+          className={`w-full lg:w-[420px] xl:w-[460px] flex-shrink-0 bg-[#160F29] border-t lg:border-t-0 lg:border-l border-[#D4AF37]/30 flex-col overflow-y-auto p-4 sm:p-5 text-sm ${
+            mobileView === 'reading' ? 'flex h-full' : 'hidden lg:flex'
+          }`}
+        >
+          {/* Mobile Back to Table Button */}
+          <div className="lg:hidden mb-3 pb-2 border-b border-white/10 flex items-center justify-between">
+            <button
+              onClick={() => setMobileView('table')}
+              className="flex items-center gap-1.5 text-xs font-semibold text-[#D4AF37] hover:text-[#FFE082]"
+            >
+              <ArrowLeft size={14} />
+              <span>Вернуться к столу</span>
+            </button>
+            <span className="text-xs text-white/50">
+              {currentSpread.name} ({currentSpread.positions.length})
+            </span>
+          </div>
+
           {/* Initial State: Spread schema list */}
           {drawnCards.length === 0 ? (
             <div className="space-y-4">
@@ -449,7 +518,7 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
             </div>
           ) : (
             /* Cards dealt state */
-            <div className="space-y-4">
+            <div className="space-y-4 pb-6">
               {/* Header */}
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <div className="flex items-center gap-2">
