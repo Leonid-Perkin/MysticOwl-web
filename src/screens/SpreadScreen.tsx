@@ -200,7 +200,7 @@ export const SpreadScreen: React.FC<SpreadScreenProps> = ({
   let cardW = 110;
   if (isCeltic) {
     cardW = isCompactMobile
-      ? Math.max(50, Math.min(Math.round(tableSize.width * 0.145), 58))
+      ? Math.max(46, Math.min(Math.round(tableSize.width * 0.13), 56))
       : Math.max(76, Math.min(Math.round(tableSize.width * 0.088), 118));
   } else {
     cardW = isCompactMobile
